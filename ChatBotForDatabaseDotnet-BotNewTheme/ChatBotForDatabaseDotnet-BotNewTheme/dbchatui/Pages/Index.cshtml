@@ -1,0 +1,203 @@
+﻿@page
+@model IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "GenAI ChatBot";
+}
+<style>
+    .table-container {
+        max-height: 50vh;
+        width: 98%;
+        overflow: auto;
+    }
+
+    .table-container.empty {
+        overflow: visible;
+        /* No scrollbars when the table is empty */
+    }
+
+    .header-row {
+        background-color: #64707E;
+        color: white;
+        font-weight: bold;
+    }
+
+    #myTable tr:first-child {
+        background-color: #64707E;
+        font-weight: bold;
+    }
+
+    .bot-selection {
+        display: flex;
+        justify-content: center;
+        margin: 10px 18px;
+        width: 18vw;
+    }
+</style>
+
+<script>
+    function selectBot(botType) {
+
+        document.getElementById('SelectedBot').value = botType;
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.getElementById(botType + '-tab').classList.add('active');
+
+        // Change placeholder based on the selected tab
+        const userQueryInput = document.getElementById('txtUserQuery');
+        if (botType === 'GenAI') {
+            userQueryInput.placeholder = "Type your question here. e.g.: I need installation instruction of Array AC2.";
+        } else if (botType === 'NLPI') {
+            userQueryInput.placeholder = "Type your question here. e.g.: Give me floor wise device info for organization xyz ?";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectedBot = document.getElementById('SelectedBot').value || 'GenAI'; // Default to GenAI
+        selectBot(selectedBot);
+    });
+
+
+</script>
+
+<center>
+    <div class="loader" id="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="chat-container">
+        <div class="bot-icon">
+            <img src="~/img/chatBot.png" alt="Bot Icon">
+        </div>
+        <div class="chat-body">
+            @if (!string.IsNullOrEmpty(Model.UserPrompt))
+            {
+                <div class="chat-message user">
+                    <img src="~/img/user-male.png" alt="User">
+                    <div class="message">@Html.Raw(Model.UserPrompt)</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Error))
+            {
+                <div class="chat-message bot">
+                    <img class="avatar avatar-xs" src="~/img/sadchatBot.png" alt="Bot Avatar">
+                    <div class="message">I'm having trouble understanding your request. Can you please rephrase it? ::
+                        @Model.Error</div>
+                </div>
+            }
+            else
+            {
+                @if (!string.IsNullOrEmpty(Model.ChatBotResponse))
+                {
+                    <div class="chat-message bot">
+                        <img class="avatar avatar-xs" src="~/img/chatBot.png" alt="Bot Avatar">
+                        <div class="message">@Html.Raw(Model.ChatBotResponse)</div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Summary))
+                {
+                    @if (!string.IsNullOrEmpty(Model.Query))
+                    {
+                        <div class="chat-message bot">
+                            <img class="avatar avatar-xs" src="~/img/chatBot.png" alt="Bot Avatar">
+                            <div class="message">
+                                <p> @Model.Summary
+
+                                <div class="qrytooltip">
+                                    <img width="47" height="20" src="~/img/ShoSQL.png" alt="Show SQL" onclick="toggleTooltip()">
+                                    <span class="qrytooltiptext" id="tooltipText">@Model.Query</span>
+                                </div>
+                                </p>
+                                <!--b>AI generated query : </b>@Model.Query -->
+                                @if (Model.RowData != null && Model.RowData.Count > 0)
+                                {
+                                    <div class="container">
+                                        <b>Data results</b>
+
+                                        <div class="table-container" id="tableContainer">
+                                            <div class="table-responsive">
+                                                <table class="table  table-sm bg-white table-bordered rounded shadow small"
+                                                    id="myTable">
+                                                    @foreach (var row in Model.RowData)
+                                                    {
+                                                        <tr class="@(Model.RowData.IndexOf(row) == 0 ? "header-row" : "")">
+                                                            @foreach (var col in row)
+                                                            {
+                                                                <td>@col</td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p><b>No result found. </b></p>
+                                }
+
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        </div>
+        <form asp-page="Index" class="form" id="IndexForm">
+            <div class="chat-footer">
+
+                <div class="bot-selection">
+                    <div class="tab" id="GenAI-tab" onclick="selectBot('GenAI')">Document Intelligence</div>
+                    <div class="tab" id="NLPI-tab" onclick="selectBot('NLPI')">Database Intelligence</div>
+                    <input type="hidden" id="SelectedBot" name="SelectedBot" asp-for="SelectedBot" />
+                </div>
+
+                <input type="text" id="txtUserQuery" asp-for="UserPrompt" name="UserPrompt" class="form-control"
+                    placeholder="Type your question here. e.g : I need installation instruction of Array AC2." required
+                    autocomplete="on" style="height: 6vh;" />
+
+                &nbsp;&nbsp;<button type="submit" class="submitbutton" style="width:300px;"
+                    id="submit_Button">SUBMIT</button>
+            </div>
+        </form>
+    </div>
+    </div>
+    </div>
+</center>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document.getElementById('IndexForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var submit_Button = document.getElementById('submit_Button');
+            submit_Button.disabled = true;
+
+            document.getElementById('loader').style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('IndexForm').submit(); // Proceed with actual submission
+            }, 1000);
+        });
+        document.getElementById('txtUserQuery').value = '';
+    });
+    function toggleTooltip() {
+        var tooltip = document.querySelector(".qrytooltip");
+        tooltip.classList.toggle("active");
+    }
+
+
+    document.addEventListener('click', function (event) {
+        var tooltip = document.querySelector(".qrytooltip");
+
+        if (!tooltip.contains(event.target)) {
+            tooltip.classList.remove("active");
+        }
+    });
+</script>

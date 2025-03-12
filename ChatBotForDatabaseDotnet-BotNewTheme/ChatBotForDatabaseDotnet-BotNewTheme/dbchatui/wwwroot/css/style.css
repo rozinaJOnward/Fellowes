@@ -1,0 +1,45 @@
+ 
+ 
+/* Loader styling */
+.loader {
+    display: none;
+    /* Hide the loader by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    /* Ensure it's on top of other content */
+}
+
+.loader span {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 3px;
+    background-color: #111111;
+    border-radius: 50%;
+    animation: blink 1.4s infinite both;
+}
+
+.loader span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.loader span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0.2;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.2;
+    }
+}

@@ -1,0 +1,64 @@
+body {
+    font-family: 'FellowesRegular', Arial, sans-serif !important;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/img/Bgimage2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 1;
+    z-index: -1;
+}
+.panel-heading {
+    padding: 0px;
+    //if not working use !important rule
+}
+/*------------------------ TOOL-TIP ------------------------ */
+.logo-container img {
+    max-height: 40px;
+    max-width: 100%;
+}
+
+.qrytooltip {
+    position: relative;
+    display: inline-block;
+}
+.qrytooltip .qrytooltiptext {
+    visibility: hidden;
+    background-color: rgb(33 37 36 / 83%);
+    border: 1px solid rgb(18 197 223);
+    color: rgb(255, 255, 251);
+    border-radius: 6px;
+    border-radius: 6px;
+    font-size: 0.6vw;
+    padding: 14px;
+    position: absolute;
+    z-index: 1000;
+    left: 50%;
+    transform: translateX(-88%);
+    white-space: normal;
+    word-wrap: break-word;
+    pointer-events: auto;
+    transition: opacity 0.2s ease-in-out;
+}
+.qrytooltip img {
+    cursor: pointer;
+}
+.qrytooltip.active .qrytooltiptext {
+    visibility: visible;
+    opacity: 1;
+}

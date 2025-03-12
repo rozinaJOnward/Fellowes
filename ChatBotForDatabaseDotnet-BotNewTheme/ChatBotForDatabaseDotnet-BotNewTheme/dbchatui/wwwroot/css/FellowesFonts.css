@@ -1,0 +1,26 @@
+/* Custom Font Regular */
+@font-face {
+    font-family: 'FellowesRegular';
+    src: url('../Font/fellowesfont/Raleway-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Custom Font Bold */
+@font-face {
+    font-family: 'FellowesBold';
+    src: url('../Font/fellowesfont/Raleway-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* Custom Font Italic */
+@font-face {
+    font-family: 'CustomFont';
+    src: url('../Font/fellowesfont/Raleway-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+ 
+
